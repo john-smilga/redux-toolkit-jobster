@@ -20,6 +20,9 @@ export const registerUser = createAsyncThunk(
   async (user, thunkAPI) => {
     try {
       const resp = await customFetch.post('/auth/register', user);
+      thunkAPI.dispatch(
+        handleChange({ name: 'jobLocation', value: resp.data.user.location })
+      );
       return resp.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.msg);
@@ -32,6 +35,9 @@ export const loginUser = createAsyncThunk(
   async (user, thunkAPI) => {
     try {
       const resp = await customFetch.post('/auth/login', user);
+      thunkAPI.dispatch(
+        handleChange({ name: 'jobLocation', value: resp.data.user.location })
+      );
       return resp.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.msg);
