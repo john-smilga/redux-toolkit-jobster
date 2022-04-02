@@ -119,7 +119,7 @@ const Landing = () => {
 export default Landing;
 ```
 
-#### Styled Components
+#### 6) Styled Components - Basic Setup
 
 - CSS in JS
 - Styled Components
@@ -141,10 +141,14 @@ const El = styled.el`
 `;
 ```
 
+- element can be any html element (div,button,section, etc)
+
 - no name collisions, since unique class
 - vscode-styled-components extension
 - colors and bugs
 - style entire react component
+
+#### 7) Styled Components - Wrap Component
 
 ```js
 const Wrapper = styled.el``;
@@ -157,6 +161,8 @@ const Component = () => {
   );
 };
 ```
+
+#### 8) Wrappers
 
 - only responsible for styling
 - wrappers folder in assets
@@ -174,43 +180,30 @@ const Component = () => {
 - export as default
 - utilize index.js
 
-#### React Router
+#### Setup Pages
 
-- Version 6
+- create Error, Register, Dashboard pages
+- basic return
+- create index.js
+- import all the pages
+- export one by one
+- basically the same, as in components
+- import App.js
+
+#### React Router 6
+
+- Please Reference React Router 6 Section
+
 - [React Router Docs](https://reactrouter.com/docs/en/v6)
 
 ```sh
 npm install react-router-dom@6
 ```
 
-- import four components
+- import three components
 
 ```js
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-```
-
-- Connect to browser's URL with BrowserRouter
-- Routes instead of Switch
-
-```js
-
-<BrowserRouter>
-    <Routes>
-      <Route path="/" element={<div>Dashboard</div>} />
-      <Route path="/register" element={<div>Register</div>} />
-      <Route path="/landing" element={<Landing />} />
-      <Route path="*" element={<div>Error</div>}>
-    </Routes>
-</BrowserRouter>
-
-```
-
-```js
-<nav>
-  <Link to='/'>Dashboard</Link>
-  <Link to='/register'>Register</Link>
-  <Link to='/landing'>Home</Link>
-</nav>
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 ```
 
 - go to Landing.js
@@ -224,18 +217,6 @@ return (
   </Link>
 );
 ```
-
-#### Setup Pages
-
-- create Error, Register, Dashboard pages
-- basic return
-- create index.js
-- import all the pages
-- export one by one
-- basically the same, as in components
-- import App.js
-- add to element={}
-- remove temp navbar
 
 #### Error Page
 
