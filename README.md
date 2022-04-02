@@ -72,7 +72,7 @@ npm install normalize.css
 - Coding Addict - [Default Starter Video](https://youtu.be/UDdyGNlQK5w)
 - Repo - [Default Starter Repo](https://github.com/john-smilga/default-starter)
 
-#### Landing Page
+#### 4) Landing Page - Setup
 
 - zoom level 175%
 - markdown preview extension
@@ -89,6 +89,8 @@ npm install normalize.css
 
 - import logo.svg and main.svg
 - import Landing in App.js and render
+
+##### 5) Landing Page - Structure
 
 #### Styled Components
 
