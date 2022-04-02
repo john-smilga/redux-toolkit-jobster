@@ -167,13 +167,12 @@ const Component = () => {
 - assets/wrappers
 - only responsible for styling
 
-
-#### Logo and Images
+#### 9) Logo and Images
 
 - logo built in Figma
 - [Cool Images](https://undraw.co/)
 
-#### Logo
+#### 11) Logo Component
 
 - create <b>components</b> folder in source
 - create Logo.js
@@ -181,7 +180,19 @@ const Component = () => {
 - export as default
 - utilize index.js
 
-#### Setup Pages
+Logo.js
+
+```js
+import logo from '../assets/images/logo.svg';
+
+const Logo = () => {
+  return <img src={logo} alt='jobify' className='logo' />;
+};
+
+export default Logo;
+```
+
+#### 12) Setup Pages
 
 - create Error, Register, Dashboard pages
 - basic return
