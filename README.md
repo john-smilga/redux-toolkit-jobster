@@ -35,7 +35,7 @@ npx create-react-app@latest myApp
 - set editor/browser side by side
 - copy/paste assets and readme from complete project
 
-#### Spring Cleaning
+#### 1) Spring Cleaning
 
 - in src remove
 - App.css
@@ -45,13 +45,13 @@ npx create-react-app@latest myApp
 - setupTests.js
 - fix App.js and index.js
 
-#### Title and Favicon
+#### 2) Title and Favicon
 
 - change title in public/index.html
 - replace favicon.ico in public
 - resource [Generate Favicons](https://favicon.io/)
 
-#### Normalize.css and Global Styles
+#### 3) Normalize.css and Global Styles
 
 - CSS in JS (styled-components)
 - saves times on the setup
