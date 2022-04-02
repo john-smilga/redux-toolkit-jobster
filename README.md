@@ -164,8 +164,9 @@ const Component = () => {
 
 #### 8) Wrappers
 
+- assets/wrappers
 - only responsible for styling
-- wrappers folder in assets
+
 
 #### Logo and Images
 
