@@ -1,5 +1,4 @@
-import Landing from './pages/Landing';
-import styled from 'styled-components';
+import { Landing, Error, Dashboard, Register } from './pages';
 
 function App() {
   return (
