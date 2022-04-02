@@ -202,7 +202,7 @@ export default Logo;
 - basically the same, as in components
 - import App.js
 
-#### React Router 6
+#### 13) React Router 6
 
 - Please Reference React Router 6 Section
 
@@ -216,6 +216,20 @@ npm install react-router-dom@6
 
 ```js
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Error, Landing, Register, Dashboard } from './pages';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Dashboard />} />
+        <Route path='landing' element={<Landing />} />
+        <Route path='register' element={<Register />} />
+        <Route path='*' element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
 ```
 
 - go to Landing.js
