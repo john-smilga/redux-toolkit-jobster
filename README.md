@@ -438,3 +438,43 @@ const onSubmit = (e) => {
   }
 };
 ```
+
+#### 21) React Toastify
+
+[React Toastify](https://www.npmjs.com/package/react-toastify)
+
+```sh
+npm install --save react-toastify
+```
+
+App.js
+
+```js
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
+return </Routes>
+<ToastContainer position='top-center' />
+<BrowserRouter>
+
+```
+
+Register.js
+
+```js
+import { toast } from 'react-toastify';
+
+if (!email || !password || (!isMember && !name)) {
+  toast.error('Please Fill Out All Fields');
+  return;
+}
+```
+
+index.css
+
+```css
+.Toastify__toast {
+  text-transform: capitalize;
+}
+```
