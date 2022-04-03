@@ -595,10 +595,39 @@ axios.get(url, options);
 axios.post(url, resource, options);
 // PATCH
 axios.patch(url, resource, options);
-// GET
+// DELETE
 axios.delete(url, options);
 ```
 
 ```sh
 npm install axios
 ```
+
+#### 25) API
+
+- Root URL
+- https://jobify-prod.herokuapp.com/api/v1/toolkit
+
+###### Register USER
+
+- POST /auth/register
+- {name:'john',email:'john@gmail.com',password:'secret'}
+- sends back the user object with token
+
+###### Register USER - TESTING()
+
+- POST /auth/testingRegister
+- {name:'john',email:'john@gmail.com',password:'secret'}
+- sends back the user object with token
+
+###### Login USER
+
+- POST /auth/login
+- {email:'john@gmail.com',password:'secret'}
+- sends back the user object with token
+
+###### Update USER
+
+- PATCH /auth/updateUser
+- { email:'john@gmail.com', name:'john', lastName:'smith', location:'my location' }
+- sends back the user object with token
