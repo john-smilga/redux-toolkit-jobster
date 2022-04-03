@@ -659,11 +659,46 @@ export const registerUser = createAsyncThunk(
   'user/registerUser',
   async (user, thunkAPI) => {
     try {
-      const resp = await customFetch.post('/auth/register', user);
+      const resp = await customFetch.post('/auth/testingRegister', user);
       console.log(resp);
     } catch (error) {
       console.log(error.response);
     }
   }
+);
+```
+
+#### 27) Register User
+
+userSlice.js
+
+```js
+export const registerUser = createAsyncThunk(
+  'user/registerUser',
+  async (user, thunkAPI) => {
+    try {
+      const resp = await customFetch.post('/auth/register', user);
+      return resp.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+
+   extraReducers: {
+    [registerUser.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [registerUser.fulfilled]: (state, { payload }) => {
+      const { user } = payload;
+      state.isLoading = false;
+      state.user = user;
+      toast.success(`Hello There ${user.name}`);
+    },
+    [registerUser.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    }
+  }
+
 );
 ```
