@@ -498,19 +498,6 @@ const initialState = {
   user: null,
 };
 
-export const registerUser = createAsyncThunk(
-  'user/registerUser',
-  async (user, thunkAPI) => {
-    console.log(`Register User : ${null}`);
-  }
-);
-export const loginUser = createAsyncThunk(
-  'user/loginUser',
-  async (user, thunkAPI) => {
-    console.log(`Login User : ${null}`);
-  }
-);
-
 const userSlice = createSlice({
   name: 'user',
   initialState,
