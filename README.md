@@ -532,3 +532,7 @@ root.render(
   </Provider>
 );
 ```
+
+```sh
+npm install @reduxjs/toolkit react-redux
+```

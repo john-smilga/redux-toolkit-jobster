@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Logo, FormRow } from '../components';
 import Wrapper from '../assets/wrappers/RegisterPage';
 import { toast } from 'react-toastify';
+
 const initialState = {
   name: '',
   email: '',
