@@ -455,7 +455,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 return </Routes>
-<ToastContainer position='top-center' />
+<ToastContainer />
 <BrowserRouter>
 
 ```
@@ -470,6 +470,12 @@ if (!email || !password || (!isMember && !name)) {
   return;
 }
 ```
+
+- modifications
+
+position
+
+<ToastContainer position='top-center' >
 
 index.css
 
