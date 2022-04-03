@@ -737,3 +737,49 @@ export const loginUser = createAsyncThunk(
 
 );
 ```
+
+#### 29) LocalStorage
+
+- utils/localStorage.js
+
+```js
+export const addUserToLocalStorage = (user) => {
+  localStorage.setItem('user', JSON.stringify(user));
+};
+
+export const removeUserFromLocalStorage = () => {
+  localStorage.removeItem('user');
+};
+
+export const getUserFromLocalStorage = () => {
+  const result = localStorage.getItem('user');
+  const user = result ? JSON.parse(result) : null;
+  return user;
+};
+```
+
+- invoke getUserFromLocalStorage when app loads (set it equal to user)
+
+```js
+const initialState = {
+  isLoading: false,
+  user: getUserFromLocalStorage(),
+};
+
+
+[registerUser.fulfilled]: (state, { payload }) => {
+      const { user } = payload;
+      state.isLoading = false;
+      state.user = user;
+      addUserToLocalStorage(user);
+      toast.success(`Hello There ${user.name}`);
+    },
+
+[loginUser.fulfilled]: (state, { payload }) => {
+      const { user } = payload;
+      state.isLoading = false;
+      state.user = user;
+      addUserToLocalStorage(user);
+      toast.success(`Welcome Back ${user.name}`);
+    },
+```
