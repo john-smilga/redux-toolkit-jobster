@@ -608,7 +608,11 @@ npm install axios
 - Root URL
 - https://jobify-prod.herokuapp.com/api/v1/toolkit
 
+- NODE COURSE
+
 ###### Register USER
+
+- https://jobify-prod.herokuapp.com/api/v1/toolkit/auth/register
 
 - POST /auth/register
 - {name:'john',email:'john@gmail.com',password:'secret'}
@@ -631,3 +635,35 @@ npm install axios
 - PATCH /auth/updateUser
 - { email:'john@gmail.com', name:'john', lastName:'smith', location:'my location' }
 - sends back the user object with token
+
+#### 26) Custom Axios Instance
+
+- utils/axios.js
+
+```js
+import axios from 'axios';
+
+const customFetch = axios.create({
+  baseURL: 'https://jobify-prod.herokuapp.com/api/v1/toolkit',
+});
+
+export default customFetch;
+```
+
+userSlice.js
+
+```js
+import customFetch from '../../utils/axios';
+
+export const registerUser = createAsyncThunk(
+  'user/registerUser',
+  async (user, thunkAPI) => {
+    try {
+      const resp = await customFetch.post('/auth/register', user);
+      console.log(resp);
+    } catch (error) {
+      console.log(error.response);
+    }
+  }
+);
+```
