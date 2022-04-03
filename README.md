@@ -783,3 +783,23 @@ const initialState = {
       toast.success(`Welcome Back ${user.name}`);
     },
 ```
+
+#### 30) Programmatically Navigate To Dashboard
+
+Register.js
+
+```js
+import { useNavigate } from 'react-router-dom';
+
+const Register = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
+    }
+  }, [user, navigate]);
+};
+```
