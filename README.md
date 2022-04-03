@@ -348,7 +348,7 @@ const root = createRoot(container);
 root.render(<App tab='home' />);
 ```
 
-#### FormRow Component
+#### 18) FormRow Component
 
 - create FormRow.js in <b>components</b>
 - setup import/export
