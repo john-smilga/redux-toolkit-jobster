@@ -332,6 +332,22 @@ function Register() {
 }
 ```
 
+#### 17) Switch To React 18
+
+- index.js
+
+```js
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import 'normalize.css';
+import './index.css';
+import App from './App';
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App tab='home' />);
+```
+
 #### FormRow Component
 
 - create FormRow.js in <b>components</b>
