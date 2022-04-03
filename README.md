@@ -580,3 +580,25 @@ const onSubmit = (e) => {
     dispatch(registerUser({ name, email, password }));
   };
 ```
+
+#### 24) HTTP Methods
+
+- GET - get resources from the server
+- POST - submit resource to the server
+- PUT/PATCH - modify resource on the server
+- DELETE - delete resource form the server
+
+```js
+// GET
+axios.get(url, options);
+// POST
+axios.post(url, resource, options);
+// PATCH
+axios.patch(url, resource, options);
+// GET
+axios.delete(url, options);
+```
+
+```sh
+npm install axios
+```
