@@ -1019,7 +1019,7 @@ const [showLogout, setShowLogout] = useState(false)
     <FaCaretDown />
   </button>
   <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
-    <button onClick={() => logoutUser()} className='dropdown-btn'>
+    <button onClick={() => console.log('logout user')} className='dropdown-btn'>
       logout
     </button>
   </div>
@@ -1027,70 +1027,135 @@ const [showLogout, setShowLogout] = useState(false)
 
 ```
 
-#### Logout User
+#### 38) Logout User
+
+userSlice.js
 
 ```js
-actions.js;
+reducers: {
+    logoutUser: (state) => {
+      state.user = null;
+      state.isSidebarOpen = false;
+      removeUserFromLocalStorage();
+    },
+    toggleSidebar: (state) => {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
+  },
 
-export const LOGOUT_USER = 'LOGOUT_USER';
+export const { logoutUser, toggleSidebar } = userSlice.actions;
+
 ```
 
-- import/export
+Navbar.js
 
 ```js
-appContext.js
+import { toggleSidebar, logoutUser } from '../features/user/userSlice';
 
-const logoutUser = () => {
-  dispatch({ type: LOGOUT_USER })
-  removeUserFromLocalStorage()
-}
-
-value={{logoutUser}}
+<div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
+  <button
+    type='button'
+    className='dropdown-btn'
+    onClick={() => {
+      dispatch(logoutUser());
+    }}
+  >
+    logout
+  </button>
+</div>;
 ```
 
+#### 39) Restrict Access
+
+- pages/ProtectedRoute.js
+
 ```js
-reducer.js;
+import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+const ProtectedRoute = ({ children }) => {
+  const { user } = useSelector((store) => store.user);
+  if (!user) {
+    return <Navigate to='/landing' />;
+  }
+  return children;
+};
 
-import { initialState } from './appContext';
+export default ProtectedRoute;
+```
 
-if (action.type === LOGOUT_USER) {
-  return {
-    ...initialState,
-    user: null,
-    token: null,
-    userLocation: '',
-    jobLocation: '',
+App.js
+
+```js
+<Route
+  path='/'
+  element={
+    <ProtectedRoute>
+      <SharedLayout />
+    </ProtectedRoute>
+  }
+>
+  ...
+</Route>
+```
+
+#### 40) Small Sidebar - Setup
+
+```js
+SmallSidebar.js;
+
+import Wrapper from '../assets/wrappers/SmallSidebar';
+import { FaTimes } from 'react-icons/fa';
+import { NavLink } from 'react-router-dom';
+import Logo from './Logo';
+
+export const SmallSidebar = () => {
+  return (
+    <Wrapper>
+      <div className='sidebar-container show-sidebar'>
+        <div className='content'>
+          <button className='close-btn' onClick={() => console.log('toggle')}>
+            <FaTimes />
+          </button>
+          <header>
+            <Logo />
+          </header>
+          <div className='nav-links'>nav links</div>
+        </div>
+      </div>
+    </Wrapper>
+  );
+};
+
+export default SmallSidebar;
+```
+
+#### 41) Small Sidebar - Toggle
+
+SmallSidebar.js;
+
+```js
+import { toggleSidebar } from '../features/user/userSlice';
+
+
+const { isSidebarOpen } = useSelector((store) => store.user);
+  const dispatch = useDispatch();
+  const toggle = () => {
+    dispatch(toggleSidebar());
   };
-}
-```
-
-```js
-Navbar.js;
-
-const { user, logoutUser, toggleSidebar } = useAppContext();
 
 return (
-  <div className='btn-container'>
-    <button className='btn' onClick={() => setShowLogout(!showLogout)}>
-      <FaUserCircle />
-      {user.name}
-      {user && user.name}
-      {user?.name} // optional chaining
-      <FaCaretDown />
-    </button>
-    <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
-      <button onClick={logoutUser} className='dropdown-btn'>
-        logout
-      </button>
-    </div>
-  </div>
+  <div className={isSidebarOpen ? 'sidebar-container show-sidebar' : 'sidebar-container'}>
+    <div className='content'>
+        <button type='button' className='close-btn' onClick={toggle}>
+          <FaTimes />
+        </button>
+
 );
 ```
 
-#### Setup Links
+#### 42) Setup Links
 
-- create <b>utils</b>in the <b>src</b>
-- setup links.js
+- create utils/links.js
 
 ```js
 import { IoBarChartSharp } from 'react-icons/io5';
@@ -1128,70 +1193,7 @@ const links = [
 export default links;
 ```
 
-#### Small Sidebar - Setup
-
-```js
-SmallSidebar.js;
-
-import Wrapper from '../assets/wrappers/SmallSidebar';
-import { FaTimes } from 'react-icons/fa';
-import { useAppContext } from '../context/appContext';
-import links from '../utils/links';
-import { NavLink } from 'react-router-dom';
-import Logo from './Logo';
-
-export const SmallSidebar = () => {
-  return (
-    <Wrapper>
-      <div className='sidebar-container show-sidebar'>
-        <div className='content'>
-          <button className='close-btn' onClick={() => console.log('toggle')}>
-            <FaTimes />
-          </button>
-          <header>
-            <Logo />
-          </header>
-          <div className='nav-links'>nav links</div>
-        </div>
-      </div>
-    </Wrapper>
-  );
-};
-
-export default SmallSidebar;
-```
-
-#### Small Sidebar - Toggle
-
-```js
-SmallSidebar.js;
-
-const { showSidebar, toggleSidebar } = useAppContext();
-```
-
-```js
-SmallSidebar.js;
-
-return (
-  <div
-    className={
-      showSidebar ? 'sidebar-container show-sidebar' : 'sidebar-container'
-    }
-  ></div>
-);
-```
-
-```js
-SmallSidebar.js;
-
-return (
-  <button className='close-btn' onClick={toggleSidebar}>
-    <FaTimes />
-  </button>
-);
-```
-
-#### Small Sidebar - Nav Links
+#### 43) Small Sidebar - Nav Links
 
 ```js
 SmallSidebar.js;
@@ -1221,9 +1223,9 @@ return (
 );
 ```
 
-#### Nav Links Component
+#### 44) Nav Links Component
 
-- in <b>components</b> create NavLinks.js
+- create components/NavLinks.js
 - styles still set from Wrapper
 - also can setup in links.js, preference
 
@@ -1266,21 +1268,23 @@ import NavLinks from './NavLinks'
 return <NavLinks toggleSidebar={toggleSidebar}>
 ```
 
-#### Big Sidebar
+#### 45) Big Sidebar
 
 ```js
-import { useAppContext } from '../context/appContext';
 import NavLinks from './NavLinks';
 import Logo from '../components/Logo';
 import Wrapper from '../assets/wrappers/BigSidebar';
+import { useSelector } from 'react-redux';
 
 const BigSidebar = () => {
-  const { showSidebar } = useAppContext();
+  const { isSidebarOpen } = useSelector((store) => store.user);
   return (
     <Wrapper>
       <div
         className={
-          showSidebar ? 'sidebar-container ' : 'sidebar-container show-sidebar'
+          isSidebarOpen
+            ? 'sidebar-container '
+            : 'sidebar-container show-sidebar'
         }
       >
         <div className='content'>
