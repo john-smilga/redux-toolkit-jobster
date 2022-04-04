@@ -908,7 +908,7 @@ export default Navbar
 
 ```
 
-#### 35) Navbar Setup
+#### 35) Navbar Structure
 
 Navbar.js;
 
@@ -970,49 +970,42 @@ export default Navbar;
 
 ```
 
-#### Toggle Sidebar
+#### 36) Toggle Sidebar
+
+userSlice.js
 
 ```js
-actions.js;
-
-export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
-```
-
-- import/export
-
-```js
-appContext.js;
-
 const initialState = {
-  showSidebar: false,
+  isLoading: false,
+  isSidebarOpen: false,
+  user: getUserFromLocalStorage(),
 };
 
-const toggleSidebar = () => {
-  dispatch({ type: TOGGLE_SIDEBAR });
+reducers: {
+    toggleSidebar: (state) => {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
+  },
+
+export const { toggleSidebar } = userSlice.actions;
+
+```
+
+Navbar.js
+
+```js
+import { toggleSidebar } from '../features/user/userSlice';
+
+const toggle = () => {
+  dispatch(toggleSidebar());
 };
+
+<button type='button' className='toggle-btn' onClick={toggle}>
+  <FaAlignLeft />
+</button>;
 ```
 
-```js
-reducer.js;
-
-if (action.type === TOGGLE_SIDEBAR) {
-  return { ...state, showSidebar: !state.showSidebar };
-}
-```
-
-```js
-Navbar.js;
-
-const { toggleSidebar } = useAppContext();
-
-return (
-  <button className='toggle-btn' onClick={toggleSidebar}>
-    <FaAlignLeft />
-  </button>
-);
-```
-
-#### Toggle Dropdown
+#### 37) Toggle Dropdown
 
 ```js
 Navbar.js
