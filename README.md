@@ -908,7 +908,7 @@ export default Navbar
 
 ```
 
-#### Navbar Setup
+#### 35) Navbar Setup
 
 Navbar.js;
 
