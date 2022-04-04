@@ -906,40 +906,52 @@ export default Navbar
 
 #### Navbar Setup
 
-```js
 Navbar.js;
 
-import { useState } from 'react';
-import { FaAlignLeft, FaUserCircle, FaCaretDown } from 'react-icons/fa';
-import { useAppContext } from '../context/appContext';
-import Logo from './Logo';
+```js
+
 import Wrapper from '../assets/wrappers/Navbar';
+import { FaAlignLeft, FaUserCircle, FaCaretDown } from 'react-icons/fa';
+import Logo from './Logo';
+import { useState } from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
+
 const Navbar = () => {
+
+
+  const { user } = useSelector((store) => store.user);
+  const dispatch = useDispatch();
+
+
+
   return (
     <Wrapper>
       <div className='nav-center'>
-        <button
-          className='toggle-btn'
-          onClick={() => console.log('toggle sidebar')}
-        >
+        <button type='button' className='toggle-btn' onClick={()=> console.log('toggle sidebar')}>
           <FaAlignLeft />
         </button>
-
         <div>
           <Logo />
           <h3 className='logo-text'>dashboard</h3>
         </div>
-
         <div className='btn-container'>
-          <button className='btn' onClick={() => console.log('show logout')}>
+          <button
+            type='button'
+            className='btn'
+            onClick={() => console.log('toggle logout dropdown'))}
+          >
             <FaUserCircle />
-            john
+            {user?.name}
             <FaCaretDown />
           </button>
-          <div className='dropdown show-dropdown'>
+          <div className= 'dropdown show-dropdown'>
             <button
-              onClick={() => console.log('logout user')}
+              type='button'
               className='dropdown-btn'
+              onClick={() => {
+               console.log('logout user')
+              }}
             >
               logout
             </button>
@@ -951,6 +963,7 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 ```
 
 #### Toggle Sidebar
