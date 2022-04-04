@@ -1300,3 +1300,147 @@ const BigSidebar = () => {
 
 export default BigSidebar;
 ```
+
+#### 46) Profile Page - Structure
+
+Profile.js
+
+```js
+import { useState } from 'react';
+import { FormRow } from '../../components';
+import Wrapper from '../../assets/wrappers/DashboardFormPage';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUser } from '../../features/user/userSlice';
+import { toast } from 'react-toastify';
+
+
+const Profile = () => {
+  const { isLoading, user } = useSelector((store) => store.user);
+  const dispatch = useDispatch();
+
+const [userData,setUserData] = useState({
+  name:user?.name :''
+  email:user?.email :''
+  lastName:user?.lastName :''
+  location:user?.location :''
+})
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name || !email || !lastName || !location) {
+      toast.error('Please Fill Out All Fields');
+      return;
+    }
+  };
+const handleChange = (e) =>{
+  const name = e.target.name
+  const value = e.target.value
+  setUserData({...userData,[name]:value})
+}
+  return (
+    <Wrapper>
+      <form className='form' onSubmit={handleSubmit}>
+        <h3>profile</h3>
+
+        <div className='form-center'>
+          <FormRow
+            type='text'
+            name='name'
+            value={name}
+            handleChange={handleChange}
+          />
+          <FormRow
+            type='text'
+            labelText='last name'
+            name='lastName'
+            value={lastName}
+            handleChange={handleChange}
+          />
+          <FormRow
+            type='email'
+            name='email'
+            value={email}
+            handleChange={handleChange}
+          />
+          <FormRow
+            type='text'
+            name='location'
+            value={location}
+            handleChange={handleChange}
+          />
+          <button className='btn btn-block' type='submit' disabled={isLoading}>
+            {isLoading ? 'Please Wait...' : 'save changes'}
+          </button>
+        </div>
+      </form>
+    </Wrapper>
+  );
+};
+
+export default Profile;
+
+
+```
+
+#### 47) Update User
+
+###### Update USER
+
+- PATCH /auth/updateUser
+- { email:'john@gmail.com', name:'john', lastName:'smith', location:'my location' }
+- authorization header : 'Bearer token'
+- sends back the user object with token
+
+userSlice.js
+
+```js
+export const updateUser = createAsyncThunk(
+  'user/updateUser',
+  async (user, thunkAPI) => {
+    try {
+      const resp = await customFetch.patch('/auth/updateUser', user, {
+        headers: {
+          authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+        },
+      });
+      return resp.data;
+    } catch (error) {
+      console.log(error.response);
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+// extra reducers
+    [updateUser.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [updateUser.fulfilled]: (state, { payload }) => {
+      const { user } = payload;
+      state.isLoading = false;
+      state.user = user;
+
+      addUserToLocalStorage(user);
+      toast.success('User Updated');
+    },
+    [updateUser.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    },
+```
+
+#### 48) Profile Page - Complete
+
+Profile.js
+
+```js
+import { updateUser } from '../../features/user/userSlice';
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  if (!name || !email || !lastName || !location) {
+    toast.error('Please Fill Out All Fields');
+    return;
+  }
+  dispatch(updateUser({ name, email, lastName, location }));
+};
+```
