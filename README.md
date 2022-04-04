@@ -878,7 +878,11 @@ const SharedLayout = () => {
 export default SharedLayout;
 ```
 
-#### React Icons
+#### 33) Shared Layout CSS
+
+- import Wrappers in BigSidebar,SmallSidebar and Navbar
+
+#### 34) React Icons
 
 [React Icons](https://react-icons.github.io/react-icons/)
 

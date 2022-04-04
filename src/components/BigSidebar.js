@@ -1,4 +1,10 @@
+import Wrapper from '../assets/wrappers/BigSidebar';
+
 const BigSidebar = () => {
-  return <h2>BigSidebar</h2>;
+  return (
+    <Wrapper>
+      <h2>BigSidebar</h2>
+    </Wrapper>
+  );
 };
 export default BigSidebar;
