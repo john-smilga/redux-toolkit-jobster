@@ -1196,9 +1196,9 @@ export default links;
 
 #### 43) Small Sidebar - Nav Links
 
-```js
-SmallSidebar.js;
+SmallSidebar.js
 
+```js
 import { NavLink } from 'react-router-dom';
 
 return (
@@ -1213,7 +1213,7 @@ return (
             isActive ? 'nav-link active' : 'nav-link'
           }
           key={id}
-          onClick={toggleSidebar}
+          onClick={toggle}
         >
           <span className='icon'>{icon}</span>
           {text}
