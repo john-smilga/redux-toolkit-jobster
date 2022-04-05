@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { MdWifiTetheringErrorRounded } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import customFetch from '../../utils/axios';
 import {
@@ -48,7 +49,10 @@ export const updateUser = createAsyncThunk(
       });
       return resp.data;
     } catch (error) {
-      console.log(error.response);
+      if (error.response.status === 401) {
+        thunkAPI.dispatch(logoutUser());
+        return thunkAPI.rejectWithValue('Unauthorized! Logging Out...');
+      }
       return thunkAPI.rejectWithValue(error.response.data.msg);
     }
   }
