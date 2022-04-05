@@ -1437,6 +1437,8 @@ import { updateUser } from '../../features/user/userSlice';
 
 const handleSubmit = (e) => {
   e.preventDefault();
+  const { name, email, lastName, location } = userData;
+
   if (!name || !email || !lastName || !location) {
     toast.error('Please Fill Out All Fields');
     return;
@@ -1445,7 +1447,7 @@ const handleSubmit = (e) => {
 };
 ```
 
-#### 49) Unauthorized - Logout User
+#### 48) Unauthorized - Logout User
 
 userSlice.js
 
@@ -1460,9 +1462,7 @@ export const updateUser = createAsyncThunk(
           authorization: `Bearer `,
         },
       });
-      thunkAPI.dispatch(
-        handleChange({ name: 'jobLocation', value: resp.data.user.location })
-      );
+
       return resp.data;
     } catch (error) {
       // console.log(error.response);
@@ -1484,7 +1484,7 @@ logoutUser: (state) => {
     },
 ```
 
-#### Refactor Async Functionality
+#### 49) Refactor Async Functionality
 
 - features/user/userThunk.js
 
