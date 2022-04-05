@@ -1311,7 +1311,6 @@ import { useState } from 'react';
 import { FormRow } from '../../components';
 import Wrapper from '../../assets/wrappers/DashboardFormPage';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUser } from '../../features/user/userSlice';
 import { toast } from 'react-toastify';
 
 
@@ -1320,14 +1319,16 @@ const Profile = () => {
   const dispatch = useDispatch();
 
 const [userData,setUserData] = useState({
-  name:user?.name :''
-  email:user?.email :''
-  lastName:user?.lastName :''
-  location:user?.location :''
+  name:user?.name ||''
+  email:user?.email ||''
+  lastName:user?.lastName ||''
+  location:user?.location ||''
 })
 
   const handleSubmit = (e) => {
     e.preventDefault();
+        const { name, email, lastName, location } = userData;
+
     if (!name || !email || !lastName || !location) {
       toast.error('Please Fill Out All Fields');
       return;
@@ -1347,26 +1348,26 @@ const handleChange = (e) =>{
           <FormRow
             type='text'
             name='name'
-            value={name}
+            value={userData.name}
             handleChange={handleChange}
           />
           <FormRow
             type='text'
             labelText='last name'
             name='lastName'
-            value={lastName}
+            value={userData.lastName}
             handleChange={handleChange}
           />
           <FormRow
             type='email'
             name='email'
-            value={email}
+            value={userData.email}
             handleChange={handleChange}
           />
           <FormRow
             type='text'
             name='location'
-            value={location}
+            value={userData.location}
             handleChange={handleChange}
           />
           <button className='btn btn-block' type='submit' disabled={isLoading}>
