@@ -1591,6 +1591,19 @@ const jobSlice = createSlice({
 export default jobSlice.reducer;
 ```
 
+store.js
+
+```js
+import jobSlice from './features/job/jobSlice';
+
+export const store = configureStore({
+  reducer: {
+    user: userSlice,
+    job: jobSlice,
+  },
+});
+```
+
 #### 51) Add Job
 
 AddJob.js
