@@ -1559,3 +1559,365 @@ export const updateUser = createAsyncThunk(
   }
 );
 ```
+
+#### 50) Job Slice
+
+- features/job/jobSlice.js
+
+```js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
+import customFetch from '../../utils/axios';
+import { getUserFromLocalStorage } from '../../utils/localStorage';
+
+const initialState = {
+  isLoading: false,
+  position: '',
+  company: '',
+  jobLocation: '',
+  jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
+  jobType: 'full-time',
+  statusOptions: ['interview', 'declined', 'pending'],
+  status: 'pending',
+  isEditing: false,
+  editJobId: '',
+};
+
+const jobSlice = createSlice({
+  name: 'job',
+  initialState,
+});
+
+export default jobSlice.reducer;
+```
+
+#### 51) Add Job
+
+AddJob.js
+
+```js
+import { FormRow } from '../../components';
+import Wrapper from '../../assets/wrappers/DashboardFormPage';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { toast } from 'react-toastify';
+const AddJob = () => {
+  const {
+    isLoading,
+    position,
+    company,
+    jobLocation,
+    jobType,
+    jobTypeOptions,
+    status,
+    statusOptions,
+    isEditing,
+    editJobId,
+  } = useSelector((store) => store.job);
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!position || !company || !jobLocation) {
+      toast.error('Please Fill Out All Fields');
+      return;
+    }
+  };
+  const handleJobInput = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+  };
+
+  return (
+    <Wrapper>
+      <form className='form'>
+        <h3>{isEditing ? 'edit job' : 'add job'}</h3>
+
+        <div className='form-center'>
+          {/* position */}
+          <FormRow
+            type='text'
+            name='position'
+            value={position}
+            handleChange={handleJobInput}
+          />
+          {/* company */}
+          <FormRow
+            type='text'
+            name='company'
+            value={company}
+            handleChange={handleJobInput}
+          />
+          {/* location */}
+          <FormRow
+            type='text'
+            labelText='job location'
+            name='jobLocation'
+            value={jobLocation}
+            handleChange={handleJobInput}
+          />
+          {/* job status */}
+
+          {/* job type */}
+
+          {/* btn container */}
+          <div className='btn-container'>
+            <button
+              type='button'
+              className='btn btn-block clear-btn'
+              onClick={() => console.log('clear values')}
+            >
+              clear
+            </button>
+            <button
+              type='submit'
+              className='btn btn-block submit-btn'
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
+              submit
+            </button>
+          </div>
+        </div>
+      </form>
+    </Wrapper>
+  );
+};
+
+export default AddJob;
+```
+
+#### 52) FormRowSelect
+
+```js
+// job status
+
+return (
+  <div className='form-row'>
+    <label htmlFor='status' className='form-label'>
+      status
+    </label>
+    <select
+      name='status'
+      value={status}
+      onChange={handleJobInput}
+      className='form-select'
+    >
+      {statusOptions.map((itemValue, index) => {
+        return (
+          <option key={index} value={itemValue}>
+            {itemValue}
+          </option>
+        );
+      })}
+    </select>
+  </div>
+);
+```
+
+- FormRowSelect.js
+
+```js
+const FormRowSelect = ({ labelText, name, value, handleChange, list }) => {
+  return (
+    <div className='form-row'>
+      <label htmlFor={name} className='form-label'>
+        {labelText || name}
+      </label>
+      <select
+        name={name}
+        value={value}
+        onChange={handleChange}
+        className='form-select'
+      >
+        {list.map((itemValue, index) => {
+          return (
+            <option key={index} value={itemValue}>
+              {itemValue}
+            </option>
+          );
+        })}
+      </select>
+    </div>
+  );
+};
+
+export default FormRowSelect;
+```
+
+AddJob.js
+
+```js
+
+  /* job status */
+<FormRowSelect
+  name='status'
+  value={status}
+  handleChange={handleJobInput}
+  list={statusOptions}
+/>
+
+<FormRowSelect
+  name='jobType'
+  labelText='job type'
+  value={jobType}
+  handleChange={handleJobInput}
+  list={jobTypeOptions}
+/>
+```
+
+#### 53) User Slice - HandleChange Reducer
+
+userSlice.js
+
+```js
+    // reducers
+    handleChange: (state, { payload: { name, value } }) => {
+      state[name] = value;
+    },
+
+export const { handleChange } = jobSlice.actions;
+```
+
+AddJob.js
+
+```js
+import { handleChange } from '../../features/job/jobSlice';
+
+const handleJobInput = (e) => {
+  const name = e.target.name;
+  const value = e.target.value;
+  dispatch(handleChange({ name, value }));
+};
+```
+
+#### 54) User Slice - ClearValues Reducer
+
+```js
+
+    // reducers
+    clearValues: () => {
+      return {
+        ...initialState
+      };
+    },
+
+export const { handleChange, clearValues } = jobSlice.actions;
+
+
+```
+
+AddJob.js
+
+```js
+import { clearValues, handleChange } from '../../features/job/jobSlice';
+
+return (
+  <button
+    type='button'
+    className='btn btn-block clear-btn'
+    onClick={() => dispatch(clearValues())}
+  >
+    clear
+  </button>
+);
+```
+
+#### 55) Create Job Request
+
+- POST /jobs
+- { position:'position', company:'company', jobLocation:'location', jobType:'full-time', status:'pending' }
+- authorization header : 'Bearer token'
+- sends back the job object
+
+```js
+export const createJob = createAsyncThunk(
+  'job/createJob',
+  async (job, thunkAPI) => {
+    try {
+      const resp = await customFetch.post('/jobs', job, {
+        headers: {
+          authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+        },
+      });
+      thunkAPI.dispatch(clearValues());
+      return resp.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+
+// extra reducers
+
+extraReducers: {
+    [createJob.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [createJob.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      toast.success('Job Created');
+    },
+    [createJob.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    },
+}
+```
+
+AddJob.js
+
+```js
+import {
+  clearValues,
+  handleChange,
+  createJob,
+} from '../../features/job/jobSlice';
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  if (!position || !company || !jobLocation) {
+    toast.error('Please Fill Out All Fields');
+    return;
+  }
+
+  dispatch(createJob({ position, company, jobLocation, jobType, status }));
+};
+```
+
+#### 56) Use User Location
+
+userThunk.js
+
+```js
+export const registerUserThunk = async (url, user, thunkAPI) => {
+  try {
+    const resp = await customFetch.post(url, user);
+
+    thunkAPI.dispatch(
+      handleChange({ name: 'jobLocation', value: resp.data.user.location })
+    );
+
+    return resp.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data.msg);
+  }
+};
+
+loginUserThunk, updateUserThunk;
+```
+
+jobSlice.js
+
+```js
+const initialState = { jobLocation: getUserFromLocalStorage()?.location || '' };
+    // reducers
+    clearValues: () => {
+      return {
+        ...initialState,
+        jobLocation: getUserFromLocalStorage()?.location || '',
+      };
+    },
+```
