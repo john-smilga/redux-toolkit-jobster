@@ -1902,30 +1902,23 @@ const handleSubmit = (e) => {
 
 #### 56) Use User Location
 
-userThunk.js
+AddJob.js
 
 ```js
-export const registerUserThunk = async (url, user, thunkAPI) => {
-  try {
-    const resp = await customFetch.post(url, user);
+const { user } = useSelector((store) => store.user);
 
-    thunkAPI.dispatch(
-      handleChange({ name: 'jobLocation', value: resp.data.user.location })
-    );
-
-    return resp.data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data.msg);
+useEffect(() => {
+  // eventually will check for isEditing
+  if (!isEditing) {
+    dispatch(handleChange({ name: 'jobLocation', value: user.location }));
   }
-};
-
-loginUserThunk, updateUserThunk;
+}, []);
 ```
 
 jobSlice.js
 
 ```js
-const initialState = { jobLocation: getUserFromLocalStorage()?.location || '' };
+
     // reducers
     clearValues: () => {
       return {
@@ -1933,4 +1926,8 @@ const initialState = { jobLocation: getUserFromLocalStorage()?.location || '' };
         jobLocation: getUserFromLocalStorage()?.location || '',
       };
     },
+```
+
+```
+
 ```
