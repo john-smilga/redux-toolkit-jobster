@@ -1936,3 +1936,31 @@ jobSlice.js
       };
     },
 ```
+
+#### 57) Logout Message
+
+userSlice.js
+
+```js
+logoutUser: (state,{payload}) => {
+      state.user = null;
+      state.isSidebarOpen = false;
+      removeUserFromLocalStorage();
+      if(payload){
+        toast.success(payload)
+      }
+    },
+
+```
+
+Navbar.js
+
+```js
+<button
+  type='button'
+  className='dropdown-btn'
+  onClick={() => dispatch(logoutUser('Logging out...'))}
+>
+  logout
+</button>
+```
