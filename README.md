@@ -1900,7 +1900,7 @@ const handleSubmit = (e) => {
 };
 ```
 
-#### 56) Use User Location
+#### 56) Use Existing User Location
 
 AddJob.js
 
@@ -1926,8 +1926,4 @@ jobSlice.js
         jobLocation: getUserFromLocalStorage()?.location || '',
       };
     },
-```
-
-```
-
 ```
