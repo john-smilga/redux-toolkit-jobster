@@ -1741,6 +1741,7 @@ const FormRowSelect = ({ labelText, name, value, handleChange, list }) => {
       <select
         name={name}
         value={value}
+        id={name}
         onChange={handleChange}
         className='form-select'
       >
