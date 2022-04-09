@@ -1783,7 +1783,7 @@ AddJob.js
 
 #### 53) User Slice - HandleChange Reducer
 
-userSlice.js
+jobSlice.js
 
 ```js
     // reducers
