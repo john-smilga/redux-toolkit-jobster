@@ -1964,3 +1964,482 @@ Navbar.js
   logout
 </button>
 ```
+
+#### 58) AllJobs Slice
+
+- features/allJobs/allJobsSlice.js
+
+```js
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
+import customFetch from '../../utils/axios';
+import { deleteJobThunk, getAllJobsThunk } from './allJobsThunk';
+
+const initialFiltersState = {
+  search: '',
+  searchStatus: 'all',
+  searchType: 'all',
+  sort: 'latest',
+  sortOptions: ['latest', 'oldest', 'a-z', 'z-a'],
+};
+
+const initialState = {
+  isLoading: false,
+  jobs: [],
+  totalJobs: 0,
+  numOfPages: 1,
+  page: 1,
+  stats: {},
+  monthlyApplications: [],
+  ...initialFiltersState,
+};
+
+const allJobsSlice = createSlice({
+  name: 'allJobs',
+  initialState,
+});
+
+export default allJobsSlice.reducer;
+```
+
+store.js
+
+```js
+import { configureStore } from '@reduxjs/toolkit';
+
+import userSlice from './features/user/userSlice';
+import jobSlice from './features/job/jobSlice';
+import allJobsSlice from './features/allJobs/allJobsSlice';
+
+export const store = configureStore({
+  reducer: {
+    user: userSlice,
+    job: jobSlice,
+    allJobs: allJobsSlice,
+  },
+});
+```
+
+#### 59) AllJobs Page Structure
+
+- create
+- components/SearchContainer.js
+- components/JobsContainer.js
+- components/Job.js
+- import/export
+
+AllJobs.js
+
+```js
+import { JobsContainer, SearchContainer } from '../../components';
+
+const AllJobs = () => {
+  return (
+    <>
+      <SearchContainer />
+      <JobsContainer />
+    </>
+  );
+};
+
+export default AllJobs;
+```
+
+#### 60) JobsContainer.js
+
+```js
+import { useEffect } from 'react';
+import Loading from './Loading';
+import Job from './Job';
+import Wrapper from '../assets/wrappers/JobsContainer';
+import { useSelector, useDispatch } from 'react-redux';
+
+const JobsContainer = () => {
+  const { jobs, isLoading } = useSelector((store) => store.allJobs);
+  const dispatch = useDispatch();
+
+  if (isLoading) {
+    return <Loading center />;
+  }
+
+  if (jobs.length === 0) {
+    return (
+      <Wrapper>
+        <h2>No jobs to display...</h2>
+      </Wrapper>
+    );
+  }
+
+  return (
+    <Wrapper>
+      <h5>jobs info</h5>
+      <div className='jobs'>
+        {jobs.map((job) => {
+          return <Job key={job._id} {...job} />;
+        })}
+      </div>
+    </Wrapper>
+  );
+};
+
+export default JobsContainer;
+```
+
+#### 61) GetAllJobs Request
+
+- GET /jobs
+- authorization header : 'Bearer token'
+- sends back the {jobs:[],totalJobs:number, numOfPages:number }
+
+allJobsSlice.js
+
+```js
+export const getAllJobs = createAsyncThunk(
+  'allJobs/getJobs',
+  async (_, thunkAPI) => {
+    let url = `/jobs`;
+
+    try {
+      const resp = await customFetch.get(url, {
+        headers: {
+          authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+        },
+      });
+
+      return resp.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+
+// extra reducers
+
+extraReducers: {
+    [getAllJobs.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [getAllJobs.fulfilled]: (state, { payload }) => {
+      state.isLoading = false;
+      state.jobs = payload.jobs;
+    },
+    [getAllJobs.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    },
+}
+
+```
+
+JobsContainer.js
+
+```js
+import { getAllJobs } from '../features/allJobs/allJobsSlice';
+
+useEffect(() => {
+  dispatch(getAllJobs());
+}, []);
+```
+
+#### 62) Single Job
+
+Job.js
+
+```js
+import moment from 'moment';
+import { FaLocationArrow, FaBriefcase, FaCalendarAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import Wrapper from '../assets/wrappers/Job';
+
+import { useDispatch } from 'react-redux';
+
+const Job = ({
+  _id,
+  position,
+  company,
+  jobLocation,
+  jobType,
+  createdAt,
+  status,
+}) => {
+  const dispatch = useDispatch();
+
+  return (
+    <Wrapper>
+      <header>
+        <div className='main-icon'>{company.charAt(0)}</div>
+        <div className='info'>
+          <h5>{position}</h5>
+          <p>{company}</p>
+        </div>
+      </header>
+      <div className='content'>
+        <div className='content-center'>
+          <div className={`status ${status}`}>{status}</div>
+        </div>
+        <footer>
+          <div className='actions'>
+            <Link
+              to='/add-job'
+              className='btn edit-btn'
+              onClick={() => {
+                console.log('edit job');
+              }}
+            >
+              Edit
+            </Link>
+            <button
+              type='button'
+              className='btn delete-btn'
+              onClick={() => {
+                console.log('delete  job');
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </footer>
+      </div>
+    </Wrapper>
+  );
+};
+
+export default Job;
+```
+
+#### 63) JobInfo
+
+- components/JobInfo.js
+
+```js
+import Wrapper from '../assets/wrappers/JobInfo';
+
+const JobInfo = ({ icon, text }) => {
+  return (
+    <Wrapper>
+      <span className='icon'>{icon}</span>
+      <span className='text'>{text}</span>
+    </Wrapper>
+  );
+};
+
+export default JobInfo;
+```
+
+Job.js
+
+```js
+
+const date = createdAt
+
+
+<div className='content-center'>
+  <JobInfo icon={<FaLocationArrow />} text={jobLocation} />
+  <JobInfo icon={<FaCalendarAlt />} text={date} />
+  <JobInfo icon={<FaBriefcase />} text={jobType} />
+  <div className={`status ${status}`}>{status}</div>
+</div>
+```
+
+#### 64) Moment.js
+
+[moment.js](https://momentjs.com/)
+
+```sh
+npm install moment
+```
+
+Job.js
+
+```js
+const date = moment(createdAt).format('MMM Do, YYYY');
+```
+
+#### 65) Toggle Loading in AllJobs
+
+allJobsSlice.js
+
+```js
+reducers: {
+    showLoading: (state) => {
+      state.isLoading = true;
+    },
+    hideLoading: (state) => {
+      state.isLoading = false;
+    },
+}
+export const {
+  showLoading,
+  hideLoading,
+} = allJobsSlice.actions;
+
+```
+
+#### 66) Delete Job Request
+
+- DELETE /jobs/jobID
+- authorization header : 'Bearer token'
+
+jobSlice.js
+
+```js
+import { showLoading, hideLoading, getAllJobs } from '../allJobs/allJobsSlice';
+
+export const deleteJob = createAsyncThunk(
+  'allJobs/deleteJob',
+  async (jobId, thunkAPI) => {
+    thunkAPI.dispatch(showLoading());
+    try {
+      const resp = await customFetch.delete(`/jobs/${jobId}`, {
+        headers: {
+          authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+        },
+      });
+      thunkAPI.dispatch(getAllJobs());
+      return resp.data;
+    } catch (error) {
+      thunkAPI.dispatch(hideLoading());
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+```
+
+Job.js
+
+```js
+<button
+  type='button'
+  className='btn delete-btn'
+  onClick={() => {
+    dispatch(deleteJob(_id));
+  }}
+>
+  Delete
+</button>
+```
+
+#### 67) SetEditJob Reducer
+
+jobSlice.js
+
+```js
+reducers:{
+
+  setEditJob: (state, { payload }) => {
+    return { ...state, isEditing: true, ...payload };
+    },
+  }
+
+  export const { handleChange, clearValues, setEditJob } = jobSlice.actions;
+
+```
+
+Job.js
+
+```js
+import { setEditJob, deleteJob } from '../features/job/jobSlice';
+
+<Link
+  to='/add-job'
+  className='btn edit-btn'
+  onClick={() => {
+    dispatch(
+      setEditJob({
+        editJobId: _id,
+        position,
+        company,
+        jobLocation,
+        jobType,
+        status,
+      })
+    );
+  }}
+>
+  Edit
+</Link>;
+```
+
+AddJob.js
+
+```js
+useEffect(() => {
+  if (!isEditing) {
+    dispatch(handleChange({ name: 'jobLocation', value: user.location }));
+  }
+}, []);
+```
+
+#### EditJob Request
+
+- PATCH /jobs/jobId
+- { position:'position', company:'company', jobLocation:'location', jobType:'full-time', status:'pending' }
+- authorization header : 'Bearer token'
+- sends back the updated job object
+
+jobSlice.js
+
+```js
+export const editJob = createAsyncThunk(
+  'job/editJob',
+  async ({ jobId, job }, thunkAPI) => {
+    try {
+      const resp = await customFetch.patch(`/jobs/${jobId}`, job, {
+        headers: {
+          authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+        },
+      });
+      thunkAPI.dispatch(clearValues());
+      return resp.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+
+
+extraReducers:{
+  [editJob.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [editJob.fulfilled]: (state) => {
+      state.isLoading = false;
+      toast.success('Job Modified...');
+    },
+    [editJob.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    },
+}
+```
+
+AddJob.js
+
+```js
+import {
+  clearValues,
+  handleChange,
+  createJob,
+  editJob,
+} from '../../features/job/jobSlice';
+
+if (isEditing) {
+  dispatch(
+    editJob({
+      jobId: editJobId,
+      job: {
+        position,
+        company,
+        jobLocation,
+        jobType,
+        status,
+      },
+    })
+  );
+  return;
+}
+```
+
+#### Refactor
+
+- features/job/jobThunk.js
