@@ -1815,6 +1815,7 @@ const handleJobInput = (e) => {
       return {
         ...initialState
       };
+      return initialState
     },
 
 export const { handleChange, clearValues } = jobSlice.actions;
@@ -1858,7 +1859,14 @@ export const createJob = createAsyncThunk(
       thunkAPI.dispatch(clearValues());
       return resp.data;
     } catch (error) {
+      // basic setup
       return thunkAPI.rejectWithValue(error.response.data.msg);
+      // logout user
+      if (error.response.status === 401) {
+      thunkAPI.dispatch(logoutUser());
+      return thunkAPI.rejectWithValue('Unauthorized! Logging Out...');
+    }
+    return thunkAPI.rejectWithValue(error.response.data.msg);
     }
   }
 );
