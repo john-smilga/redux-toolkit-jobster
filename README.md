@@ -1604,7 +1604,7 @@ export const store = configureStore({
 });
 ```
 
-#### 51) Add Job
+#### 51) Add Job - Structure
 
 AddJob.js
 
@@ -1612,8 +1612,8 @@ AddJob.js
 import { FormRow } from '../../components';
 import Wrapper from '../../assets/wrappers/DashboardFormPage';
 import { useSelector, useDispatch } from 'react-redux';
-
 import { toast } from 'react-toastify';
+
 const AddJob = () => {
   const {
     isLoading,
