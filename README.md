@@ -2466,3 +2466,434 @@ if (isEditing) {
 #### 69) Refactor
 
 - features/job/jobThunk.js
+
+```js
+import customFetch from '../../utils/axios';
+import { showLoading, hideLoading, getAllJobs } from '../allJobs/allJobsSlice';
+import { clearValues } from './jobSlice';
+
+export const createJobThunk = async (job, thunkAPI) => {
+  try {
+    const resp = await customFetch.post('/jobs', job, {
+      headers: {
+        authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+      },
+    });
+    thunkAPI.dispatch(clearValues());
+    return resp.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data.msg);
+  }
+};
+
+export const deleteJobThunk = async (jobId, thunkAPI) => {
+  thunkAPI.dispatch(showLoading());
+  try {
+    const resp = await customFetch.delete(`/jobs/${jobId}`, {
+      headers: {
+        authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+      },
+    });
+    thunkAPI.dispatch(getAllJobs());
+    return resp.data;
+  } catch (error) {
+    thunkAPI.dispatch(hideLoading());
+    return thunkAPI.rejectWithValue(error.response.data.msg);
+  }
+};
+
+export const editJobThunk = async ({ jobId, job }, thunkAPI) => {
+  try {
+    const resp = await customFetch.patch(`/jobs/${jobId}`, job, {
+      headers: {
+        authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+      },
+    });
+    thunkAPI.dispatch(clearValues());
+    return resp.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data.msg);
+  }
+};
+```
+
+jobSlice.js
+
+```js
+import { createJobThunk, deleteJobThunk, editJobThunk } from './jobThunk';
+
+export const createJob = createAsyncThunk('job/createJob', createJobThunk);
+
+export const deleteJob = createAsyncThunk('job/deleteJob', deleteJobThunk);
+
+export const editJob = createAsyncThunk('job/editJob', editJobThunk);
+```
+
+#### 70) AuthHeader - File Approach
+
+jobThunk.js
+
+```js
+const authHeader = (thunkAPI) => {
+  return {
+    headers: {
+      authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+    },
+  };
+};
+
+export const createJobThunk = async (job, thunkAPI) => {
+  try {
+    const resp = await customFetch.post('/jobs', job, authHeader(thunkAPI));
+    thunkAPI.dispatch(clearValues());
+    return resp.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data.msg);
+  }
+};
+```
+
+#### 70) AuthHeader - Utils Approach
+
+- create utils/authHeader.js
+
+```js
+const authHeader = (thunkAPI) => {
+  return {
+    headers: {
+      authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+    },
+  };
+};
+
+export default authHeader;
+```
+
+jobThunk.js
+
+```js
+import authHeader from '../../utils/authHeader';
+```
+
+#### 72) AuthHeader - Axios Interceptors Approach
+
+- utils/axios.js
+
+```js
+import axios from 'axios';
+import { getUserFromLocalStorage } from './localStorage';
+
+const customFetch = axios.create({
+  baseURL: 'https://jobify-prod.herokuapp.com/api/v1/toolkit',
+});
+
+export const authFetch = axios.create({
+  baseURL: 'https://jobify-prod.herokuapp.com/api/v1/toolkit',
+});
+
+authFetch.interceptors.request.use(
+  (config) => {
+    const user = getUserFromLocalStorage();
+    if (user) {
+      config.headers.common['Authorization'] = `Bearer ${user.token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default customFetch;
+```
+
+- jobThunk.js
+- userThunk.js
+- allJobsSlice.js
+- import { authFetch } from '../../utils/axios';
+- use authFetch for authenticated requests
+
+Example
+jobThunk.js
+
+```js
+export const createJobThunk = async (job, thunkAPI) => {
+  try {
+    const resp = await authFetch.post('/jobs', job);
+    thunkAPI.dispatch(clearValues());
+    return resp.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data.msg);
+  }
+};
+```
+
+#### 73) Test User
+
+- email : testUser@test.com
+- password : secret
+- read only!
+- dummy data
+
+Register.js
+
+```js
+<button
+  type='button'
+  className='btn btn-block btn-hipster'
+  disabled={isLoading}
+  onClick={() => {
+    dispatch(loginUser({ email: 'testUser@test.com', password: 'secret' }));
+  }}
+>
+  Demo
+</button>
+```
+
+#### 74) Get Stats Request
+
+- GET /jobs/stats
+- authorization header : 'Bearer token'
+- returns
+  {
+  defaultStats:{pending:24,interview:27,declined:24},
+  monthlyApplications:[{date:"Nov 2021",count:5},{date:"Dec 2021",count:4} ]
+  }
+- last six months
+
+  allJobsSlice.js
+
+```js
+export const showStats = createAsyncThunk(
+  'allJobs/showStats',
+  async (_, thunkAPI) => {
+    try {
+      const resp = await authFetch.get('/jobs/stats');
+      console.log(resp.data));
+      return resp.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+
+// extraReducers
+
+    [showStats.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [showStats.fulfilled]: (state, { payload }) => {
+      state.isLoading = false;
+      state.stats = payload.defaultStats;
+      state.monthlyApplications = payload.monthlyApplications;
+    },
+    [showStats.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      toast.error(payload);
+    },
+
+```
+
+#### 75) Stats Page
+
+- create
+- components/StatsContainer.js
+- components/ChartsContainer.js
+- import/export
+
+Stats.js
+
+```js
+import { useEffect } from 'react';
+import { StatsContainer, Loading, ChartsContainer } from '../../components';
+import { useDispatch, useSelector } from 'react-redux';
+import { showStats } from '../../features/allJobs/allJobsSlice';
+const Stats = () => {
+  const { isLoading, monthlyApplications } = useSelector(
+    (store) => store.allJobs
+  );
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(showStats());
+    // eslint-disable-next-line
+  }, []);
+  if (isLoading) {
+    return <Loading center />;
+  }
+  return (
+    <>
+      <StatsContainer />
+      {monthlyApplications.length > 0 && <ChartsContainer />}
+    </>
+  );
+};
+
+export default Stats;
+```
+
+#### 76) Stats Container
+
+- create components/StatItem.js
+
+StatsContainer.js
+
+```js
+import StatItem from './StatItem';
+import { FaSuitcaseRolling, FaCalendarCheck, FaBug } from 'react-icons/fa';
+import Wrapper from '../assets/wrappers/StatsContainer';
+import { useSelector } from 'react-redux';
+const StatsContainer = () => {
+  const { stats } = useSelector((store) => store.allJobs);
+  const defaultStats = [
+    {
+      title: 'pending applications',
+      count: stats.pending || 0,
+      icon: <FaSuitcaseRolling />,
+      color: '#e9b949',
+      bcg: '#fcefc7',
+    },
+    {
+      title: 'interviews scheduled',
+      count: stats.interview || 0,
+      icon: <FaCalendarCheck />,
+      color: '#647acb',
+      bcg: '#e0e8f9',
+    },
+    {
+      title: 'jobs declined',
+      count: stats.declined || 0,
+      icon: <FaBug />,
+      color: '#d66a6a',
+      bcg: '#ffeeee',
+    },
+  ];
+
+  return (
+    <Wrapper>
+      {defaultStats.map((item, index) => {
+        return <StatItem key={index} {...item} />;
+      })}
+    </Wrapper>
+  );
+};
+
+export default StatsContainer;
+```
+
+#### 77) Stat Item
+
+StatItem.js
+
+```js
+import Wrapper from '../assets/wrappers/StatItem';
+
+const StatItem = ({ count, title, icon, color, bcg }) => {
+  return (
+    <Wrapper color={color} bcg={bcg}>
+      <header>
+        <span className='count'>{count}</span>
+        <span className='icon'>{icon}</span>
+      </header>
+      <h5 className='title'>{title}</h5>
+    </Wrapper>
+  );
+};
+
+export default StatItem;
+```
+
+#### 78) Charts Container
+
+- create
+- components/AreaChart.js
+- components/BarChart.js
+
+ChartsContainer.js
+
+```js
+import React, { useState } from 'react';
+
+import BarChart from './BarChart';
+import AreaChart from './AreaChart';
+import Wrapper from '../assets/wrappers/ChartsContainer';
+import { useSelector } from 'react-redux';
+const ChartsContainer = () => {
+  const [barChart, setBarChart] = useState(true);
+  const { monthlyApplications: data } = useSelector((store) => store.allJobs);
+  return (
+    <Wrapper>
+      <h4>Monthly Applications</h4>
+      <button type='button' onClick={() => setBarChart(!barChart)}>
+        {barChart ? 'Area Chart' : 'Bar Chart'}
+      </button>
+      {barChart ? <BarChart data={data} /> : <AreaChart data={data} />}
+    </Wrapper>
+  );
+};
+
+export default ChartsContainer;
+```
+
+#### 79) Charts Library
+
+#### 80) AreaChart
+
+AreaChart.js
+
+```js
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
+
+const AreaChartComponent = ({ data }) => {
+  return (
+    <ResponsiveContainer width='100%' height={300}>
+      <AreaChart data={data} margin={{ top: 50 }}>
+        <CartesianGrid strokeDasharray='3 3' />
+        <XAxis dataKey='date' />
+        <YAxis allowDecimals={false} />
+        <Tooltip />
+        <Area type='monotone' dataKey='count' stroke='#2cb1bc' fill='#bef8fd' />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+};
+
+export default AreaChartComponent;
+```
+
+#### 81) BarChart.js
+
+```js
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+
+const BarChartComponent = ({ data }) => {
+  return (
+    <ResponsiveContainer width='100%' height={300}>
+      <BarChart data={data} margin={{ top: 50 }}>
+        <CartesianGrid strokeDasharray='3 3 ' />
+        <XAxis dataKey='date' />
+        <YAxis allowDecimals={false} />
+        <Tooltip />
+        <Bar dataKey='count' fill='#2cb1bc' barSize={75} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+};
+
+export default BarChartComponent;
+```
