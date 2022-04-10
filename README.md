@@ -2309,7 +2309,7 @@ jobSlice.js
 import { showLoading, hideLoading, getAllJobs } from '../allJobs/allJobsSlice';
 
 export const deleteJob = createAsyncThunk(
-  'allJobs/deleteJob',
+  'job/deleteJob',
   async (jobId, thunkAPI) => {
     thunkAPI.dispatch(showLoading());
     try {
