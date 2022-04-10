@@ -2048,7 +2048,6 @@ export default AllJobs;
 
 ```js
 import { useEffect } from 'react';
-import Loading from './Loading';
 import Job from './Job';
 import Wrapper from '../assets/wrappers/JobsContainer';
 import { useSelector, useDispatch } from 'react-redux';
@@ -2058,7 +2057,11 @@ const JobsContainer = () => {
   const dispatch = useDispatch();
 
   if (isLoading) {
-    return <Loading center />;
+    return (
+      <Wrapper>
+        <h2>Loading...</h2>
+      </Wrapper>
+    );
   }
 
   if (jobs.length === 0) {
@@ -2084,6 +2087,8 @@ const JobsContainer = () => {
 export default JobsContainer;
 ```
 
+[CSS Only Loading Spinner](https://youtu.be/DqqZEpctZ8w)
+
 Loading.js
 
 ```js
@@ -2092,6 +2097,16 @@ const Loading = ({ center }) => {
 };
 
 export default Loading;
+```
+
+JobsContainer.js
+
+```js
+import Loading from './Loading';
+
+if (isLoading) {
+  return <Loading center />;
+}
 ```
 
 #### 61) GetAllJobs Request
