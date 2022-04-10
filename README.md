@@ -2369,7 +2369,7 @@ useEffect(() => {
 }, []);
 ```
 
-#### EditJob Request
+#### 68) EditJob Request
 
 - PATCH /jobs/jobId
 - { position:'position', company:'company', jobLocation:'location', jobType:'full-time', status:'pending' }
@@ -2439,6 +2439,6 @@ if (isEditing) {
 }
 ```
 
-#### Refactor
+#### 69) Refactor
 
 - features/job/jobThunk.js
