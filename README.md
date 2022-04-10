@@ -2197,7 +2197,7 @@ const Job = ({
       </header>
       <div className='content'>
         <div className='content-center'>
-        <h4>more content</h4>
+          <h4>more content</h4>
           <div className={`status ${status}`}>{status}</div>
         </div>
         <footer>
@@ -2300,7 +2300,7 @@ export const {
 
 #### 66) Delete Job Request
 
-- DELETE /jobs/jobID
+- DELETE /jobs/jobId
 - authorization header : 'Bearer token'
 
 jobSlice.js
