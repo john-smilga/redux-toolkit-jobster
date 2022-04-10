@@ -2084,6 +2084,16 @@ const JobsContainer = () => {
 export default JobsContainer;
 ```
 
+Loading.js
+
+```js
+const Loading = ({ center }) => {
+  return <div className={center ? 'loading loading-center' : 'loading'}></div>;
+};
+
+export default Loading;
+```
+
 #### 61) GetAllJobs Request
 
 - GET /jobs
