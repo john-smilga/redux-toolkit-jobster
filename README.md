@@ -2646,7 +2646,7 @@ Register.js
     dispatch(loginUser({ email: 'testUser@test.com', password: 'secret' }));
   }}
 >
-  Demo
+  {isLoading ? 'loading...' : 'demo'}
 </button>
 ```
 
