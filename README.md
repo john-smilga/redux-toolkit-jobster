@@ -2645,7 +2645,7 @@ export const showStats = createAsyncThunk(
   'allJobs/showStats',
   async (_, thunkAPI) => {
     try {
-      const resp = await authFetch.get('/jobs/stats');
+      const resp = await customFetch.get('/jobs/stats');
       console.log(resp.data));
       return resp.data;
     } catch (error) {
