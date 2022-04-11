@@ -2587,11 +2587,7 @@ const customFetch = axios.create({
   baseURL: 'https://jobify-prod.herokuapp.com/api/v1/toolkit',
 });
 
-export const authFetch = axios.create({
-  baseURL: 'https://jobify-prod.herokuapp.com/api/v1/toolkit',
-});
-
-authFetch.interceptors.request.use(
+customFetch.interceptors.request.use(
   (config) => {
     const user = getUserFromLocalStorage();
     if (user) {
@@ -2607,26 +2603,7 @@ authFetch.interceptors.request.use(
 export default customFetch;
 ```
 
-- jobThunk.js
-- userThunk.js
-- allJobsSlice.js
-- import { authFetch } from '../../utils/axios';
-- use authFetch for authenticated requests
-
-Example
-jobThunk.js
-
-```js
-export const createJobThunk = async (job, thunkAPI) => {
-  try {
-    const resp = await authFetch.post('/jobs', job);
-    thunkAPI.dispatch(clearValues());
-    return resp.data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data.msg);
-  }
-};
-```
+- remove auth header
 
 #### 73) Test User
 
