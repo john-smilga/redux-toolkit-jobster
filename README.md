@@ -2819,6 +2819,20 @@ export default ChartsContainer;
 npm install recharts
 ```
 
+- For now does not work with React 18
+
+```sh
+npm install react@17 react-dom@17
+```
+
+```sh
+npm install recharts
+```
+
+```sh
+npm install react@18 react-dom@18
+```
+
 #### 80) AreaChart
 
 AreaChart.js
@@ -2842,7 +2856,7 @@ const AreaChartComponent = ({ data }) => {
         <XAxis dataKey='date' />
         <YAxis allowDecimals={false} />
         <Tooltip />
-        <Area type='monotone' dataKey='count' stroke='#2cb1bc' fill='#bef8fd' />
+        <Area type='monotone' dataKey='count' stroke='#1e3a8a' fill='#3b82f6' />
       </AreaChart>
     </ResponsiveContainer>
   );
@@ -2872,7 +2886,7 @@ const BarChartComponent = ({ data }) => {
         <XAxis dataKey='date' />
         <YAxis allowDecimals={false} />
         <Tooltip />
-        <Bar dataKey='count' fill='#2cb1bc' barSize={75} />
+        <Bar dataKey='count' fill='#3b82f6' barSize={75} />
       </BarChart>
     </ResponsiveContainer>
   );
