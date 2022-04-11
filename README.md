@@ -2811,7 +2811,13 @@ const ChartsContainer = () => {
 export default ChartsContainer;
 ```
 
-#### 79) Charts Library
+#### 79) Recharts Library
+
+[Recharts](https://recharts.org)
+
+```sh
+npm install recharts
+```
 
 #### 80) AreaChart
 
