@@ -2894,3 +2894,459 @@ const BarChartComponent = ({ data }) => {
 
 export default BarChartComponent;
 ```
+
+#### 82) Search Container
+
+SearchContainer.js
+
+```js
+import { FormRow, FormRowSelect } from '.';
+import Wrapper from '../assets/wrappers/SearchContainer';
+import { useSelector, useDispatch } from 'react-redux';
+import { handleChange, clearFilters } from '../features/allJobs/allJobsSlice';
+
+const SearchContainer = () => {
+  const { isLoading, search, searchStatus, searchType, sort, sortOptions } =
+    useSelector((store) => store.allJobs);
+  const { jobTypeOptions, statusOptions } = useSelector((store) => store.job);
+  const dispatch = useDispatch();
+  const handleSearch = (e) => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+  return (
+    <Wrapper>
+      <form className='form'>
+        <h4>search form</h4>
+        <div className='form-center'>
+          {/* search position */}
+
+          <FormRow
+            type='text'
+            name='search'
+            value={search}
+            handleChange={handleSearch}
+          />
+          {/* search by status */}
+          <FormRowSelect
+            labelText='status'
+            name='searchStatus'
+            value={searchStatus}
+            handleChange={handleSearch}
+            list={['all', ...statusOptions]}
+          />
+          {/* search by type */}
+          <FormRowSelect
+            labelText='type'
+            name='searchType'
+            value={searchType}
+            handleChange={handleSearch}
+            list={['all', ...jobTypeOptions]}
+          />
+          {/* sort */}
+          <FormRowSelect
+            name='sort'
+            value={sort}
+            handleChange={handleSearch}
+            list={sortOptions}
+          />
+          <button
+            className='btn btn-block btn-danger'
+            disabled={isLoading}
+            onClick={handleSubmit}
+          >
+            clear filters
+          </button>
+        </div>
+      </form>
+    </Wrapper>
+  );
+};
+
+export default SearchContainer;
+```
+
+#### 83) Handle Change and Clear Filters
+
+allJobsSlice.js
+
+```js
+reducers:{
+  handleChange: (state, { payload: { name, value } }) => {
+      // state.page = 1;
+      state[name] = value;
+    },
+    clearFilters: (state) => {
+      return { ...state, ...initialFiltersState };
+    },
+}
+
+```
+
+SearchContainer.js
+
+```js
+import { handleChange, clearFilters } from '../features/allJobs/allJobsSlice';
+
+const handleSearch = (e) => {
+  if (isLoading) return;
+  dispatch(handleChange({ name: e.target.name, value: e.target.value }));
+};
+const handleSubmit = (e) => {
+  e.preventDefault();
+  dispatch(clearFilters());
+};
+```
+
+#### 84) Pagination Setup
+
+- server returns 10 jobs per page
+
+- create
+- components/PageBtnContainer.js
+
+allJobsSlice.js
+
+```js
+
+    extraReducers:{
+
+    [getAllJobs.fulfilled]: (state, { payload }) => {
+      state.isLoading = false;
+      state.jobs = payload.jobs;
+      state.numOfPages = payload.numOfPages;
+      state.totalJobs = payload.totalJobs;
+    },
+  }
+
+```
+
+JobsContainer
+
+```js
+const { jobs, isLoading, page, totalJobs, numOfPages } = useSelector(
+  (store) => store.allJobs
+);
+
+return (
+    <Wrapper>
+      <h5>
+        {totalJobs} job{jobs.length > 1 && 's'} found
+      </h5>
+      <div className='jobs'>
+        {jobs.map((job) => {
+          return <Job key={job._id} {...job} />;
+        })}
+      </div>
+      {numOfPages > 1 && <PageBtnContainer />}
+    </Wrapper>
+```
+
+#### 85) PageBtnComponent Structure
+
+[JS Nuggets - Array.from()](https://youtu.be/zg1Bv4xubwo)
+
+```js
+import { HiChevronDoubleLeft, HiChevronDoubleRight } from 'react-icons/hi';
+import Wrapper from '../assets/wrappers/PageBtnContainer';
+import { useSelector, useDispatch } from 'react-redux';
+const PageBtnContainer = () => {
+  const { numOfPages, page } = useSelector((store) => store.allJobs);
+  const dispatch = useDispatch();
+  const pages = Array.from({ length: numOfPages }, (_, index) => {
+    return index + 1;
+  });
+  const nextPage = () => {};
+  const prevPage = () => {};
+  return (
+    <Wrapper>
+      <button className='prev-btn' onClick={prevPage}>
+        <HiChevronDoubleLeft />
+        prev
+      </button>
+      <div className='btn-container'>
+        {pages.map((pageNumber) => {
+          return (
+            <button
+              type='button'
+              className={pageNumber === page ? 'pageBtn active' : 'pageBtn'}
+              key={pageNumber}
+              onClick={() => console.log('change page')}
+            >
+              {pageNumber}
+            </button>
+          );
+        })}
+      </div>
+      <button className='next-btn' onClick={nextPage}>
+        next
+        <HiChevronDoubleRight />
+      </button>
+    </Wrapper>
+  );
+};
+
+export default PageBtnContainer;
+```
+
+#### 86) Change Page
+
+allJobsSlice.js
+
+```js
+reducers:{
+  changePage: (state, { payload }) => {
+      state.page = payload;
+    },
+}
+
+```
+
+PageBtnContainer.js
+
+```js
+import { changePage } from '../features/allJobs/allJobsSlice';
+
+const nextPage = () => {
+  let newPage = page + 1;
+  if (newPage > numOfPages) {
+    newPage = 1;
+  }
+  dispatch(changePage(newPage));
+};
+const prevPage = () => {
+  let newPage = page - 1;
+  if (newPage < 1) {
+    newPage = numOfPages;
+  }
+  dispatch(changePage(newPage));
+};
+
+return (
+  <div className='btn-container'>
+    {pages.map((pageNumber) => {
+      return (
+        <button
+          type='button'
+          className={pageNumber === page ? 'pageBtn active' : 'pageBtn'}
+          key={pageNumber}
+          onClick={() => dispatch(changePage(pageNumber))}
+        >
+          {pageNumber}
+        </button>
+      );
+    })}
+  </div>
+);
+```
+
+#### 87) Query String Params
+
+allJobsSlice
+
+```js
+export const getAllJobs = createAsyncThunk(
+  'allJobs/getJobs',
+  async (_, thunkAPI) => {
+    const { page, search, searchStatus, searchType, sort } =
+      thunkAPI.getState().allJobs;
+
+    let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}&page=${page}`;
+    if (search) {
+      url = url + `&search=${search}`;
+    }
+    try {
+      const resp = await customFetch.get(url);
+      return resp.data;
+    }
+
+```
+
+JobsContainer.js
+
+```js
+const {
+  jobs,
+  isLoading,
+  page,
+  totalJobs,
+  numOfPages,
+  search,
+  searchStatus,
+  searchType,
+  sort,
+} = useSelector((store) => store.allJobs);
+
+useEffect(() => {
+  dispatch(getAllJobs());
+  // eslint-disable-next-line
+}, [page, search, searchStatus, searchType, sort]);
+```
+
+#### 88) Change Page and isLoading
+
+allJobsSlice.js
+
+```js
+reducers:{
+  handleChange: (state, { payload: { name, value } }) => {
+      state.page = 1;
+      state[name] = value;
+    },
+```
+
+SearchContainer.js
+
+```js
+const handleSearch = (e) => {
+  if (isLoading) return;
+  dispatch(handleChange({ name: e.target.name, value: e.target.value }));
+};
+```
+
+#### Refactor allJobsSlice.js
+
+- create
+- features/allJobs/allJobsThunk.js
+
+```js
+import customFetch from '../../utils/axios';
+
+export const getAllJobsThunk = async (thunkAPI) => {
+  const { page, search, searchStatus, searchType, sort } =
+    thunkAPI.getState().allJobs;
+
+  let url = `/jobs?page=${page}&status=${searchStatus}&jobType=${searchType}&sort=${sort}`;
+  if (search) {
+    url = url + `&search=${search}`;
+  }
+  try {
+    const resp = await customFetch.get(url, {
+      headers: {
+        authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
+      },
+    });
+
+    return resp.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data.msg);
+  }
+};
+
+export const showStatsThunk = async (_, thunkAPI) => {
+  try {
+    const resp = await customFetch.get('/jobs/stats');
+    return resp.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response.data.msg);
+  }
+};
+```
+
+allJobsSlice.js
+
+```js
+import { showStatsThunk, getAllJobsThunk } from './allJobsThunk';
+
+export const getAllJobs = createAsyncThunk('allJobs/getJobs', getAllJobsThunk);
+export const showStats = createAsyncThunk('allJobs/getJobs', showStatsThunk);
+```
+
+#### 89) Clear Store - Setup
+
+allJobsSlice.js
+
+```js
+reducers:{
+  clearAllJobsState: () => initialState,
+}
+```
+
+#### 90) clearStore
+
+userThunk.js
+
+```js
+import { logoutUser } from './userSlice';
+import { clearAllJobsState } from '../allJobs/allJobsSlice';
+import { clearValues } from '../job/jobSlice';
+
+export const clearStoreThunk = async (message, thunkAPI) => {
+  try {
+    // logout user
+    thunkAPI.dispatch(logoutUser(message));
+    // clear jobs value
+    thunkAPI.dispatch(clearAllJobsState());
+    // clear job input values
+    thunkAPI.dispatch(clearValues());
+    return Promise.resolve();
+  } catch (error) {
+    // console.log(error);
+    return Promise.reject();
+  }
+};
+```
+
+userSlice.js
+
+```js
+import { clearStoreThunk } from './userThunk';
+export const clearStore = createAsyncThunk('user/clearStore', clearStoreThunk);
+
+extraReducers:{
+  [clearStore.rejected]: () => {
+      toast.error('There was an error');
+    },
+}
+```
+
+Navbar.js
+
+```js
+import { clearStore } from '../features/user/userSlice';
+
+return (
+  <button
+    type='button'
+    className='dropdown-btn'
+    onClick={() => {
+      dispatch(clearStore('Logout Successful...'));
+    }}
+  >
+    logout
+  </button>
+);
+```
+
+#### 91) UnAuthorized Requests
+
+axios.js
+
+```js
+import { clearStore } from '../features/user/userSlice';
+
+export const checkForUnauthorizedResponse = (error, thunkAPI) => {
+  if (error.response.status === 401) {
+    thunkAPI.dispatch(clearStore());
+    return thunkAPI.rejectWithValue('Unauthorized! Logging Out...');
+  }
+  return thunkAPI.rejectWithValue(error.response.data.msg);
+};
+```
+
+allJobsThunk.js
+
+```js
+import customFetch, { checkForUnauthorizedResponse } from '../../utils/axios';
+
+export const showStatsThunk = async (_, thunkAPI) => {
+  try {
+    const resp = await customFetch.get('/jobs/stats');
+    return resp.data;
+  } catch (error) {
+    return checkForUnauthorizedResponse(error, thunkAPI);
+  }
+};
+```
+
+- refactor in all authenticated requests
