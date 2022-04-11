@@ -2463,7 +2463,7 @@ if (isEditing) {
 }
 ```
 
-#### 69) Refactor
+#### 69) Job Thunk
 
 - features/job/jobThunk.js
 
