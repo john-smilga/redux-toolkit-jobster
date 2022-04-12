@@ -3212,7 +3212,7 @@ const handleSearch = (e) => {
 };
 ```
 
-#### Refactor allJobsSlice.js
+#### 89) Refactor allJobsSlice.js
 
 - create
 - features/allJobs/allJobsThunk.js
@@ -3229,11 +3229,7 @@ export const getAllJobsThunk = async (thunkAPI) => {
     url = url + `&search=${search}`;
   }
   try {
-    const resp = await customFetch.get(url, {
-      headers: {
-        authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
-      },
-    });
+    const resp = await customFetch.get(url);
 
     return resp.data;
   } catch (error) {
@@ -3260,7 +3256,7 @@ export const getAllJobs = createAsyncThunk('allJobs/getJobs', getAllJobsThunk);
 export const showStats = createAsyncThunk('allJobs/getJobs', showStatsThunk);
 ```
 
-#### 89) Clear Store - Setup
+#### 90) Clear Store - Setup
 
 allJobsSlice.js
 
@@ -3270,7 +3266,7 @@ reducers:{
 }
 ```
 
-#### 90) clearStore
+#### 91) clearStore
 
 userThunk.js
 
@@ -3326,7 +3322,7 @@ return (
 );
 ```
 
-#### 91) UnAuthorized Requests
+#### 92) UnAuthorized Requests
 
 axios.js
 
