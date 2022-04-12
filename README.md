@@ -3101,7 +3101,13 @@ reducers:{
       state.page = payload;
     },
 }
-
+export const {
+  showLoading,
+  hideLoading,
+  handleChange,
+  clearFilters,
+  changePage,
+} = allJobsSlice.actions;
 ```
 
 PageBtnContainer.js
