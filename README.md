@@ -3253,7 +3253,7 @@ allJobsSlice.js
 import { showStatsThunk, getAllJobsThunk } from './allJobsThunk';
 
 export const getAllJobs = createAsyncThunk('allJobs/getJobs', getAllJobsThunk);
-export const showStats = createAsyncThunk('allJobs/getJobs', showStatsThunk);
+export const showStats = createAsyncThunk('allJobs/showStats', showStatsThunk);
 ```
 
 #### 90) Clear Store - Setup
