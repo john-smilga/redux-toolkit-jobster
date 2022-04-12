@@ -2980,6 +2980,8 @@ reducers:{
     },
 }
 
+export const { showLoading, hideLoading, handleChange, clearFilters } =
+  allJobsSlice.actions;
 ```
 
 SearchContainer.js
