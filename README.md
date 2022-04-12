@@ -3043,7 +3043,7 @@ return (
     </Wrapper>
 ```
 
-#### 85) PageBtnComponent Structure
+#### 85) PageBtnContainer Structure
 
 [JS Nuggets - Array.from()](https://youtu.be/zg1Bv4xubwo)
 
@@ -3054,6 +3054,7 @@ import { useSelector, useDispatch } from 'react-redux';
 const PageBtnContainer = () => {
   const { numOfPages, page } = useSelector((store) => store.allJobs);
   const dispatch = useDispatch();
+
   const pages = Array.from({ length: numOfPages }, (_, index) => {
     return index + 1;
   });
