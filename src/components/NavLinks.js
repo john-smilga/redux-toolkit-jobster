@@ -14,6 +14,7 @@ const NavLinks = ({ toggleSidebar }) => {
             }}
             key={id}
             onClick={toggleSidebar}
+            end
           >
             <span className='icon'>{icon}</span>
             {text}
