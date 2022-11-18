@@ -1224,6 +1224,23 @@ return (
 );
 ```
 
+#### REACT ROUTER UPDATE !!!
+
+- [Stack Overflow](https://stackoverflow.com/questions/70644361/react-router-dom-v6-shows-active-for-index-as-well-as-other-subroutes)
+
+```js
+<NavLink
+to={path}
+key={id}
+onClick={toggleSidebar}
+className={({ isActive }) =>
+isActive ? 'nav-link active' : 'nav-link'}
+
+
+end
+>
+```
+
 #### 44) Nav Links Component
 
 - create components/NavLinks.js
