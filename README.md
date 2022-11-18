@@ -2608,7 +2608,9 @@ customFetch.interceptors.request.use(
   (config) => {
     const user = getUserFromLocalStorage();
     if (user) {
-      config.headers.common['Authorization'] = `Bearer ${user.token}`;
+      config.headers['Authorization'] = `Bearer ${user.token}`;
+      // in the latest version "common" returns undefined
+      // config.headers.common['Authorization'] = `Bearer ${user.token}`;
     }
     return config;
   },
