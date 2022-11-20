@@ -551,7 +551,7 @@ export const loginUser = createAsyncThunk(
   'user/loginUser',
   async (user, thunkAPI) => {
     console.log(`Login User : ${user}`)
-);
+});
 ```
 
 - Register.js
@@ -683,7 +683,7 @@ export const registerUser = createAsyncThunk(
       return thunkAPI.rejectWithValue(error.response.data.msg);
     }
   }
-
+)
    extraReducers: {
     [registerUser.pending]: (state) => {
       state.isLoading = true;
@@ -700,7 +700,62 @@ export const registerUser = createAsyncThunk(
     }
   }
 
-);
+```
+
+#### Extra Reducers "Builder Callback" Notation
+
+```js
+extraReducers: (builder) => {
+    builder
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(registerUser.fulfilled, (state, { payload }) => {
+        const { user } = payload;
+        state.isLoading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+        toast.success(`Hello There ${user.name}`);
+      })
+      .addCase(registerUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      })
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(loginUser.fulfilled, (state, { payload }) => {
+        const { user } = payload;
+        state.isLoading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+
+        toast.success(`Welcome Back ${user.name}`);
+      })
+      .addCase(loginUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateUser.fulfilled, (state, { payload }) => {
+        const { user } = payload;
+        state.isLoading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+
+        toast.success(`User Updated!`);
+      })
+      .addCase(updateUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      })
+      .addCase(clearStore.rejected, () => {
+        toast.error('There was an error..');
+      });
+  },
+
 ```
 
 #### 28) Login User
@@ -913,7 +968,6 @@ export default Navbar
 Navbar.js;
 
 ```js
-
 import Wrapper from '../assets/wrappers/Navbar';
 import { FaAlignLeft, FaUserCircle, FaCaretDown } from 'react-icons/fa';
 import Logo from './Logo';
@@ -922,17 +976,17 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Navbar = () => {
-
-
   const { user } = useSelector((store) => store.user);
   const dispatch = useDispatch();
-
-
 
   return (
     <Wrapper>
       <div className='nav-center'>
-        <button type='button' className='toggle-btn' onClick={()=> console.log('toggle sidebar')}>
+        <button
+          type='button'
+          className='toggle-btn'
+          onClick={() => console.log('toggle sidebar')}
+        >
           <FaAlignLeft />
         </button>
         <div>
@@ -943,18 +997,18 @@ const Navbar = () => {
           <button
             type='button'
             className='btn'
-            onClick={() => console.log('toggle logout dropdown'))}
+            onClick={() => console.log('toggle logout dropdown')}
           >
             <FaUserCircle />
             {user?.name}
             <FaCaretDown />
           </button>
-          <div className= 'dropdown show-dropdown'>
+          <div className='dropdown show-dropdown'>
             <button
               type='button'
               className='dropdown-btn'
               onClick={() => {
-               console.log('logout user')
+                console.log('logout user');
               }}
             >
               logout
@@ -967,7 +1021,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
 ```
 
 #### 36) Toggle Sidebar
@@ -3049,17 +3102,18 @@ const { jobs, isLoading, page, totalJobs, numOfPages } = useSelector(
 );
 
 return (
-    <Wrapper>
-      <h5>
-        {totalJobs} job{jobs.length > 1 && 's'} found
-      </h5>
-      <div className='jobs'>
-        {jobs.map((job) => {
-          return <Job key={job._id} {...job} />;
-        })}
-      </div>
-      {numOfPages > 1 && <PageBtnContainer />}
-    </Wrapper>
+  <Wrapper>
+    <h5>
+      {totalJobs} job{jobs.length > 1 && 's'} found
+    </h5>
+    <div className='jobs'>
+      {jobs.map((job) => {
+        return <Job key={job._id} {...job} />;
+      })}
+    </div>
+    {numOfPages > 1 && <PageBtnContainer />}
+  </Wrapper>
+);
 ```
 
 #### 85) PageBtnContainer Structure
@@ -3186,6 +3240,8 @@ export const getAllJobs = createAsyncThunk(
       const resp = await customFetch.get(url);
       return resp.data;
     }
+  }
+)
 
 ```
 
@@ -3373,6 +3429,132 @@ export const showStatsThunk = async (_, thunkAPI) => {
 ```
 
 - refactor in all authenticated requests
+
+#### Refactor All Extra Reducers to Builder Callback Notation
+
+allJobsSlice.js
+
+```js
+ extraReducers: (builder) => {
+    builder
+      .addCase(getAllJobs.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getAllJobs.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.jobs = payload.jobs;
+        state.numOfPages = payload.numOfPages;
+        state.totalJobs = payload.totalJobs;
+      })
+      .addCase(getAllJobs.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      })
+      .addCase(showStats.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(showStats.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.stats = payload.defaultStats;
+        state.monthlyApplications = payload.monthlyApplications;
+      })
+      .addCase(showStats.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      });
+  },
+```
+
+jobSlice.js
+
+```js
+extraReducers: (builder) => {
+    builder
+      .addCase(createJob.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(createJob.fulfilled, (state) => {
+        state.isLoading = false;
+        toast.success('Job Created');
+      })
+      .addCase(createJob.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      })
+      .addCase(deleteJob.fulfilled, (state, { payload }) => {
+        toast.success(payload);
+      })
+      .addCase(deleteJob.rejected, (state, { payload }) => {
+        toast.error(payload);
+      })
+      .addCase(editJob.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(editJob.fulfilled, (state) => {
+        state.isLoading = false;
+        toast.success('Job Modified...');
+      })
+      .addCase(editJob.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      });
+  },
+```
+
+userSlice.js
+
+```js
+ extraReducers: (builder) => {
+    builder
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(registerUser.fulfilled, (state, { payload }) => {
+        const { user } = payload;
+        state.isLoading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+        toast.success(`Hello There ${user.name}`);
+      })
+      .addCase(registerUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      })
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(loginUser.fulfilled, (state, { payload }) => {
+        const { user } = payload;
+        state.isLoading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+
+        toast.success(`Welcome Back ${user.name}`);
+      })
+      .addCase(loginUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateUser.fulfilled, (state, { payload }) => {
+        const { user } = payload;
+        state.isLoading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+
+        toast.success(`User Updated!`);
+      })
+      .addCase(updateUser.rejected, (state, { payload }) => {
+        state.isLoading = false;
+        toast.error(payload);
+      })
+      .addCase(clearStore.rejected, () => {
+        toast.error('There was an error..');
+      });
+  },
+```
 
 #### Switch To Local Search
 
