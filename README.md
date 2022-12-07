@@ -3616,6 +3616,13 @@ const SearchContainer = () => {
       }, 1000);
     };
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLocalSearch('');
+    dispatch(clearFilters());
+  };
+
   const optimizedDebounce = useMemo(() => debounce(), []);
 
   return (
