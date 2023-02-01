@@ -1332,11 +1332,11 @@ export default NavLinks;
 ```
 
 ```js
-SmallSidebar.js
+SmallSidebar.js;
 
-import NavLinks from './NavLinks'
+import NavLinks from './NavLinks';
 
-return <NavLinks toggleSidebar={toggleSidebar}>
+return <NavLinks toggleSidebar={toggle} />;
 ```
 
 #### 45) Big Sidebar
