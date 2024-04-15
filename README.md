@@ -606,13 +606,13 @@ npm install axios
 #### 25) API
 
 - Root URL
-- https://jobify-prod.herokuapp.com/api/v1/toolkit
+- https://redux-toolkit-jobster-api-server.onrender.com/api/v1
 
 - NODE COURSE
 
 ###### Register USER
 
-- https://jobify-prod.herokuapp.com/api/v1/toolkit/auth/register
+- https://redux-toolkit-jobster-api-server.onrender.com/api/v1/auth/register
 
 - POST /auth/register
 - {name:'john',email:'john@gmail.com',password:'secret'}
@@ -644,7 +644,7 @@ npm install axios
 import axios from 'axios';
 
 const customFetch = axios.create({
-  baseURL: 'https://jobify-prod.herokuapp.com/api/v1/toolkit',
+  baseURL: 'https://redux-toolkit-jobster-api-server.onrender.com/api/v1',
 });
 
 export default customFetch;
